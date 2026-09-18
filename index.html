@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CNC / MCT 계산기</title>
+  <title>CNC / MCT 도우미</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -96,7 +96,7 @@
     
     input, textarea, select {
       width: 100%; background: #090d16; border: 1px solid var(--border); border-radius: 6px;
-      color: #fff; padding: 8px; font-size: 13px; margin-bottom: 6px; outline: none;
+      color: #fff; padding: 8px; font-size: 13px; margin-bottom: 5px; outline: none;
     }
     input:focus, textarea:focus, select:focus { border-color: var(--accent); }
 
@@ -105,10 +105,10 @@
     .info-box {
       background: #090d16; border: 1px solid var(--border); border-radius: 8px;
       padding: 8px; font-family: monospace; font-size: 11px; color: var(--accent);
-      max-height: 140px; overflow-y: auto; white-space: pre-wrap; line-height: 1.45;
+      max-height: 130px; overflow-y: auto; white-space: pre-wrap; line-height: 1.45;
     }
 
-    /* 테이블 스타일 */
+    /* G/M 코드 및 조건표 스타일 */
     .data-table-wrap {
       overflow-x: auto;
       margin-top: 6px;
@@ -134,7 +134,6 @@
     .data-table tr:last-child td { border-bottom: none; }
     .data-table tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
 
-    /* 코드 뱃지 스타일 */
     .code-tag {
       display: inline-block;
       background: rgba(56, 189, 248, 0.15);
@@ -158,7 +157,6 @@
     .badge-common { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.4); }
     .badge-m { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
 
-    /* 필터 탭 버튼 그룹 */
     .filter-tabs {
       display: flex;
       gap: 6px;
@@ -187,7 +185,7 @@
 <body>
 
   <header>
-    <h1 id="headerTitle">CNC / MCT <span>계산기</span></h1>
+    <h1 id="headerTitle">CNC / MCT <span>도우미</span></h1>
 
     <div class="header-biz-card" id="headerBizCard">
       <div class="hbc-top">
@@ -210,24 +208,27 @@
   <div class="container">
     <div id="view-main">
       <div class="main-grid">
+        <!-- 첫 줄: 절삭조건 계산기 -->
         <div class="menu-btn" onclick="openView('lathe-calc')">
-          선반 절삭조건
+          선반 절삭조건 계산
           <span>Vc ↔ RPM & 조도(Rz)</span>
         </div>
         <div class="menu-btn" onclick="openView('mct-calc')">
-          밀링 절삭조건
-          <span>N ↔ Vc & F ↔ Fz & Q</span>
+          밀링 절삭조건 계산
+          <span>N ↔ Vc & F ↔ Fz & 공출량(Q)</span>
         </div>
 
+        <!-- 둘째 줄: 기술 레퍼런스 일람 -->
         <div class="menu-btn" onclick="openView('gcode-calc')">
           G / M 코드 일람
-          <span>선반/MCT/사이클 코드 완벽 분류</span>
+          <span>선반 & MCT & 사이클</span>
         </div>
         <div class="menu-btn" onclick="openView('mat-calc')">
           재질별 절삭조건
-          <span>ISO별 Vc / Fz 권장 가이드</span>
+          <span>ISO 그룹별 Vc / Fz 권장 가이드</span>
         </div>
 
+        <!-- 셋째 줄 & 넷째 줄: 기술정보 링크 -->
         <div class="menu-btn" onclick="window.open('https://www.duracarb.co.kr/page/techInfomations.aspx?ID=turn', '_blank')">
           Duracarb 터닝
         </div>
@@ -262,7 +263,7 @@
         <label>인서트 노즈 R (mm)</label>
         <input type="number" id="l_nr" placeholder="예: 0.8" step="0.4" oninput="calcLathe(1)" />
       </div>
-      <div class="info-box" id="latheCalcReport">수치를 입력하면 주축 속도와 조도(Rz)가 실시간 자동 계산됩니다.</div>
+      <div class="info-box" id="latheCalcReport">파라미터를 입력하면 실시간 상호 산출됩니다.</div>
     </div>
 
     <!-- 2. 밀링 계산기 -->
@@ -270,7 +271,7 @@
       <div class="card">
         <div class="input-grid-2">
           <div>
-            <label>공구 직경 Φ (mm)</label>
+            <label>직경 Φ (mm)</label>
             <input type="number" id="m_dia" placeholder="예: 10" oninput="onMctDiaChange()" />
           </div>
           <div>
@@ -292,7 +293,7 @@
         
         <div class="input-grid-2">
           <div>
-            <label>테이블 이송 F (mm/min)</label>
+            <label>이송 FEED (F mm/min)</label>
             <input type="number" id="m_feed" placeholder="예: 764" oninput="calcMctFeed(2)" />
           </div>
           <div>
@@ -312,13 +313,12 @@
           </div>
         </div>
       </div>
-      <div class="info-box" id="mctCalcReport">수치를 입력하면 절삭조건 및 칩 배출량(Q)이 연동 계산됩니다.</div>
+      <div class="info-box" id="mctCalcReport">파라미터 입력 시 절삭조건 및 공출량(Q)이 실시간 양방향 연동됩니다.</div>
     </div>
 
-    <!-- 3. G/M 코드 일람 -->
+    <!-- 3. G / M 코드 일람 화면 -->
     <div id="view-gcode-calc" class="sub-view">
       <div class="card">
-        <!-- 필터 탭 -->
         <div class="filter-tabs">
           <div class="tab-btn active" onclick="setFilterCat('all', this)">전체</div>
           <div class="tab-btn" onclick="setFilterCat('lathe', this)">선반(CNC)</div>
@@ -347,7 +347,7 @@
               <tr data-cat="common"><td><span class="code-tag">G03</span></td><td><span class="badge badge-common">공용</span></td><td>원호 보간 (CCW)</td><td>반시계 방향 원호 가공</td></tr>
               <tr data-cat="common"><td><span class="code-tag">G04</span></td><td><span class="badge badge-common">공용</span></td><td>Dwell (휴지)</td><td>일정 시간 이송 대기 (홈 가공 칩 끊기, 바닥 정삭)</td></tr>
               <tr data-cat="common"><td><span class="code-tag">G28</span></td><td><span class="badge badge-common">공용</span></td><td>기계원점 복귀</td><td>중간 경유점 경유 후 1기계원점 복귀</td></tr>
-              <tr data-cat="common"><td><span class="code-tag">G40</span></td><td><span class="badge badge-common">공용</span></td><td>인서트/공구경 취소</td><td>공구 반경 보정 해제</td></tr>
+              <tr data-cat="common"><td><span class="code-tag">G40</span></td><td><span class="badge badge-common">공용</span></td><td>공구경/노즈R 보정 취소</td><td>공구 반경 및 노즈R 보정 벡터 해제</td></tr>
               <tr data-cat="common"><td><span class="code-tag">G41</span></td><td><span class="badge badge-common">공용</span></td><td>경보정 좌측</td><td>진행방향 기준 좌측 보정 (MCT 하향절삭 필수)</td></tr>
               <tr data-cat="common"><td><span class="code-tag">G42</span></td><td><span class="badge badge-common">공용</span></td><td>경보정 우측</td><td>진행방향 기준 공구 우측 보정</td></tr>
               <tr data-cat="common"><td><span class="code-tag">G54~G59</span></td><td><span class="badge badge-common">공용</span></td><td>공작물 좌표계</td><td>가공 원점 1번~6번 지정</td></tr>
@@ -404,7 +404,7 @@
       </div>
     </div>
 
-    <!-- 4. 재질별 추천 가공조건표 -->
+    <!-- 4. 재질별 추천 가공조건 화면 -->
     <div id="view-mat-calc" class="sub-view">
       <div class="card">
         <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
@@ -479,7 +479,7 @@
       document.getElementById('view-main').style.display = 'block';
       document.getElementById('headerBizCard').style.display = 'flex';
       document.getElementById('btnHome').style.display = 'none';
-      document.getElementById('headerTitle').innerHTML = 'CNC / MCT <span>계산기</span>';
+      document.getElementById('headerTitle').innerHTML = 'CNC / MCT <span>도우미</span>';
     }
 
     function openView(name) {
@@ -487,14 +487,13 @@
       document.getElementById('view-main').style.display = 'none';
       document.getElementById('headerBizCard').style.display = 'none';
       document.getElementById('btnHome').style.display = 'block';
-      
       const titles = {
         'lathe-calc': '선반 절삭조건 계산',
         'mct-calc': '밀링 절삭조건 계산',
         'gcode-calc': '표준 G / M 코드 일람',
         'mat-calc': '재질별 추천 절삭조건'
       };
-      document.getElementById('headerTitle').innerText = titles[name] || 'CNC / MCT 계산기';
+      document.getElementById('headerTitle').innerText = titles[name] || 'CNC / MCT 도우미';
       document.getElementById('view-' + name).style.display = 'flex';
     }
 
@@ -515,7 +514,6 @@
         const cat = row.getAttribute('data-cat');
         const text = row.innerText.toLowerCase();
 
-        // 탭 매칭 확인 (공용 코드는 선반 및 MCT 탭 모두 노출)
         let matchesCat = false;
         if (currentCategory === 'all') {
           matchesCat = true;
@@ -532,7 +530,9 @@
       });
     }
 
-    /* CNC 선반 절삭 계산기 */
+    /* =========================================================
+       1. CNC 선반 절삭 계산기
+       ========================================================= */
     function calcLathe(mode) {
       const d = parseFloat(document.getElementById('l_dia').value);
       const vcIn = document.getElementById('l_vc');
@@ -560,7 +560,9 @@
         `[계산 결과]\n• 주축 속도 (N) : ${rpm} RPM\n• 절삭 속도 (Vc) : ${vc} m/min\n• 분당 피드 : ${(rpm * f).toFixed(1)} mm/min\n• 이론 조도 Rz : ${rz.toFixed(1)} ㎛ (Ra 약 ${(rz/4).toFixed(2)} ㎛)`;
     }
 
-    /* 밀링 절삭 계산기 */
+    /* =========================================================
+       2. 밀링 절삭 계산기
+       ========================================================= */
     function onMctDiaChange() {
       const d = parseFloat(document.getElementById('m_dia').value);
       const vcIn = document.getElementById('m_vc');
