@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CNC / MCT 도우미</title>
+  <title>CNC / MCT 계산기</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -185,7 +185,7 @@
 <body>
 
   <header>
-    <h1 id="headerTitle">CNC / MCT <span>도우미</span></h1>
+    <h1 id="headerTitle">CNC / MCT <span>계산기</span></h1>
 
     <div class="header-biz-card" id="headerBizCard">
       <div class="hbc-top">
@@ -479,7 +479,7 @@
       document.getElementById('view-main').style.display = 'block';
       document.getElementById('headerBizCard').style.display = 'flex';
       document.getElementById('btnHome').style.display = 'none';
-      document.getElementById('headerTitle').innerHTML = 'CNC / MCT <span>도우미</span>';
+      document.getElementById('headerTitle').innerHTML = 'CNC / MCT <span>계산기</span>';
     }
 
     function openView(name) {
@@ -493,7 +493,7 @@
         'gcode-calc': '표준 G / M 코드 일람',
         'mat-calc': '재질별 추천 절삭조건'
       };
-      document.getElementById('headerTitle').innerText = titles[name] || 'CNC / MCT 도우미';
+      document.getElementById('headerTitle').innerText = titles[name] || 'CNC / MCT 계산기';
       document.getElementById('view-' + name).style.display = 'flex';
     }
 
